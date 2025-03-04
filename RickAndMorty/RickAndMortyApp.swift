@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// Este es como el punto de partida, se dice donde quiero que comience
+// la app a ejecutarse
 @main
 struct RickAndMortyApp: App {
     var body: some Scene {
