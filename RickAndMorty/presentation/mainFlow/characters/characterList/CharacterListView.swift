@@ -18,21 +18,20 @@ struct CharacterListView: View {
         NavigationView{
             //Se coloca el contenido aca
             List(characterDb) { character in
-                            CharacterItemView(
-                                character: character,
-                                onClick: { selectedCharacter in
-                                    print("Click en \(selectedCharacter.name)")
-                                }
-                            )
-                        }
-            
-                        //Antes de que cierre el bracket se pone el titulo que se quiere
-                        .navigationTitle("Characters")
-                        .listStyle(PlainListStyle()) //Cambia el estilo de la lista
+                // Asi se indica a donde quiero que se navegue, mandando que cosas
+                // adentro se pone lo que se puede clickear, en este caso el cahracter item view
+                NavigationLink(destination: CharacterDetailView(character: character)) {
+                    CharacterItemView(character: character)
+                }
+            }
+
+            //Antes de que cierre el bracket se pone el titulo que se quiere
+            .navigationTitle("Characters")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .listStyle(PlainListStyle()) //Cambia el estilo de la lista
             }
             .background(Color("Surface"))
-
-            
         }
 }
 
@@ -41,7 +40,6 @@ struct CharacterListView: View {
 struct CharacterItemView: View {
     // Se defne lo que se necesitara como parametro
     let character: Character
-    let onClick: (Character) -> Void //de momento
     
     var body: some View {
         HStack {
