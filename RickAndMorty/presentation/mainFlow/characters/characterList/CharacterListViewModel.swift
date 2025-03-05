@@ -27,16 +27,4 @@ final class CharacterListViewModel: ObservableObject {
         }
     }
     
-    // Maneja un "click" que simula pasar a un estado de error
-    func onLoadingClick() {
-        state.isLoading = false
-        state.hasError = true
-    }
-    
-    // Reintenta la carga de datos
-    func onRetryClick() {
-        state.isLoading = true
-        state.hasError = false
-        getListCharacters()
-    }
 }

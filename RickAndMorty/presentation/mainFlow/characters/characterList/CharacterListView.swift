@@ -8,40 +8,81 @@
 import SwiftUI
 
 struct CharacterListView: View {
-    @StateObject private var viewModel = CharacterListViewModel()
+    
+    // De momento, mando a llamar en la screen, despues ya con el VM
+    let characterDb = CharacterDb().getAllCharacters()
     
     var body: some View {
-        NavigationView {
-            Group {
-                if viewModel.state.hasError {
-                    // Pantalla de error con botón de reintento
-                    VStack(spacing: 16) {
-                        Text("Ocurrió un error al cargar la lista de personajes.")
-                        Button("Reintentar") {
-                            viewModel.onRetryClick()
+            
+        // Top App Bar, no se define un objeto
+        NavigationView{
+            //Se coloca el contenido aca
+            List(characterDb) { character in
+                            CharacterItemView(
+                                character: character,
+                                onClick: { selectedCharacter in
+                                    print("Click en \(selectedCharacter.name)")
+                                }
+                            )
                         }
-                    }
-                } else if viewModel.state.isLoading {
-                    // Pantalla de carga
-                    VStack(spacing: 16) {
-                        ProgressView("Cargando...")
-                        // Botón opcional para simular un error manualmente
-                        Button("Simular Error") {
-                            viewModel.onLoadingClick()
-                        }
-                    }
-                } else {
-                    // Lista de personajes
-                    List(viewModel.state.characterList) { character in
-                        CharacterRow(character: character)
-                    }
-                    .listStyle(PlainListStyle())
-                }
+            
+                        //Antes de que cierre el bracket se pone el titulo que se quiere
+                        .navigationTitle("Characters")
+                        .listStyle(PlainListStyle()) //Cambia el estilo de la lista
             }
-            .navigationTitle("Characters")
+            .background(Color("Surface"))
+
+            
         }
-        .onAppear {
-            viewModel.getListCharacters()
+}
+
+
+// Similar a un composable, se define un Struct que devuelve un View
+struct CharacterItemView: View {
+    // Se defne lo que se necesitara como parametro
+    let character: Character
+    let onClick: (Character) -> Void //de momento
+    
+    var body: some View {
+        HStack {
+            // Imagen a la izquierda - async
+            AsyncImage(url: URL(string: character.imageUrl)) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 70, height: 67)
+                        .clipShape(Circle())
+                } else {
+                    //Si no carga, que se muestre esto
+                    Circle().fill(Color.gray)
+                        .frame(width: 60, height: 60)
+                }
+                
+            }
+            .padding(.leading, 8)
+            
+            // A la derecha lo que quiero mostrar
+            VStack(alignment: .leading, spacing: 9) {
+                Text(character.name)
+                    .font(.headline) //lo estiliza con negrita
+                
+                Text("\(character.species) - \(character.status)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.leading, 12)
+            
         }
+        .contentShape(Rectangle())
+        .padding(.vertical, 8)
+    }
+}
+
+
+// Colocar un Preview
+struct My_CharacterList_Preview: PreviewProvider {
+    static var previews: some View {
+        CharacterListView()
     }
 }
